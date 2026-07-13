@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>玄星 AI 命理实验室</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080b10'/%3E%3Cpath d='M32 8 38 25 56 26 42 37 47 55 32 44 17 55 22 37 8 26 26 25Z' fill='%23f2c66d'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%23080b10'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="scene" aria-hidden="true">
+      <div class="grid"></div>
+      <div class="scanline"></div>
+      <span class="halo halo-red"></span>
+      <span class="halo halo-cyan"></span>
+      <span class="halo halo-gold"></span>
+      <span class="cursor-glow" data-cursor-glow></span>
+    </div>
+
+    <main class="app-shell" data-tradition="chinese" data-mode="dynamic" data-generating="false">
+      <section class="gate-view" aria-labelledby="gate-title">
+        <header class="topbar">
+          <div class="brand">
+            <span class="brand-mark">玄星</span>
+            <span class="brand-copy">AI 命理实验室</span>
+          </div>
+          <div class="build-pill">
+            <span></span>
+            Web Trial Build
+          </div>
+        </header>
+
+        <div class="gate-layout">
+          <section class="hero-copy">
+            <p class="eyebrow">Dual Oracle Interface</p>
+            <h1 id="gate-title">玄星双盘</h1>
+            <p class="lead">
+              中式命理走干支、五行、卦象与节律；西式占星走太阳星座、元素、宫位与相位倾向。每次生成都会先给“问题直答”，再展开依据和行动建议。
+            </p>
+
+            <div class="signal-strip" aria-label="系统能力">
+              <article>
+                <span>Engine</span>
+                <strong>中式 / 西式</strong>
+              </article>
+              <article>
+                <span>View</span>
+                <strong>动态 / 静态</strong>
+              </article>
+              <article>
+                <span>Output</span>
+                <strong>直答 / 报告</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="portal-stack" aria-label="选择命理体系">
+            <button class="portal-card portal-chinese" type="button" data-enter="chinese">
+              <span class="portal-orbit" aria-hidden="true"></span>
+              <span class="portal-icon"><i data-lucide="disc-3"></i></span>
+              <span class="portal-kicker">东方推演</span>
+              <strong>中式命理</strong>
+              <small>干支、五行、十神、卦象、节律</small>
+              <span class="portal-action">进入中式舱</span>
+            </button>
+
+            <button class="portal-card portal-western" type="button" data-enter="western">
+              <span class="portal-orbit" aria-hidden="true"></span>
+              <span class="portal-icon"><i data-lucide="orbit"></i></span>
+              <span class="portal-kicker">星盘推演</span>
+              <strong>西式占星</strong>
+              <small>太阳星座、元素、宫位、相位倾向</small>
+              <span class="portal-action">进入星盘舱</span>
+            </button>
+          </section>
+        </div>
+      </section>
+
+      <section class="oracle-view" aria-label="AI 命理工作台">
+        <aside class="control-panel" aria-label="输入控制台">
+          <button class="back-button" type="button" data-back title="返回入口">
+            <i data-lucide="arrow-left"></i>
+            <span>返回入口</span>
+          </button>
+
+          <div class="panel-heading">
+            <p class="eyebrow">Current Engine</p>
+            <h2 data-panel-title>中式命理</h2>
+            <p data-panel-subtitle>干支五行推演中</p>
+          </div>
+
+          <div class="control-block">
+            <span class="control-label">体系</span>
+            <div class="segmented-control" role="tablist" aria-label="切换命理体系">
+              <button type="button" class="segment is-active" data-tradition-button="chinese" role="tab" aria-selected="true">
+                <i data-lucide="circle-dot"></i>
+                中式
+              </button>
+              <button type="button" class="segment" data-tradition-button="western" role="tab" aria-selected="false">
+                <i data-lucide="sparkles"></i>
+                西式
+              </button>
+            </div>
+          </div>
+
+          <div class="control-block">
+            <span class="control-label">视图</span>
+            <div class="segmented-control" role="tablist" aria-label="切换 UI 版本">
+              <button type="button" class="segment is-active" data-mode-button="dynamic" role="tab" aria-selected="true">
+                <i data-lucide="activity"></i>
+                动态
+              </button>
+              <button type="button" class="segment" data-mode-button="static" role="tab" aria-selected="false">
+                <i data-lucide="file-text"></i>
+                静态
+              </button>
+            </div>
+          </div>
+
+          <form class="oracle-form" data-oracle-form>
+            <label>
+              <span>姓名或代号</span>
+              <input name="name" type="text" value="来访者" autocomplete="name" />
+            </label>
+
+            <div class="field-row">
+              <label>
+                <span>出生日期</span>
+                <input name="date" type="date" value="1992-08-18" />
+              </label>
+              <label>
+                <span>出生时间</span>
+                <input name="time" type="time" value="08:30" />
+              </label>
+            </div>
+
+            <label>
+              <span>出生地</span>
+              <input name="place" type="text" value="上海" autocomplete="address-level2" />
+            </label>
+
+            <label>
+              <span>想问的主题</span>
+              <select name="topic" data-topic-select>
+                <option value="career">事业机会</option>
+                <option value="wealth">财富节奏</option>
+                <option value="relationship">关系情感</option>
+                <option value="study">学习成长</option>
+                <option value="health">身心状态</option>
+              </select>
+            </label>
+
+            <div class="topic-dial" aria-label="快速选择主题">
+              <button type="button" data-topic-chip="career" class="is-active">事业</button>
+              <button type="button" data-topic-chip="wealth">财富</button>
+              <button type="button" data-topic-chip="relationship">关系</button>
+              <button type="button" data-topic-chip="study">成长</button>
+              <button type="button" data-topic-chip="health">身心</button>
+            </div>
+
+            <label>
+              <span>具体问题</span>
+              <textarea name="question" rows="4">接下来三个月我最需要把握什么机会？</textarea>
+            </label>
+
+            <div class="answer-preview" data-answer-preview hidden>
+              <span>问题直答</span>
+              <p>生成后会在这里直接显示答案。</p>
+            </div>
+
+            <button class="primary-action" type="submit">
+              <i data-lucide="wand-sparkles"></i>
+              <span>生成 AI 解读</span>
+            </button>
+
+            <div class="generation-meter" aria-hidden="true">
+              <i data-generation-bar></i>
+            </div>
+          </form>
+
+          <p class="safety-note">结果仅供娱乐和自我反思，不替代医疗、法律、投资等专业建议。</p>
+        </aside>
+
+        <section class="workspace" aria-live="polite">
+          <header class="workspace-header">
+            <div>
+              <p class="eyebrow" data-mode-label>动态版</p>
+              <h2 data-stage-title>中式命理动态盘</h2>
+            </div>
+            <div class="status-cluster">
+              <span class="status-pill"><i></i><em data-status-label>待推演</em></span>
+              <button class="icon-button" type="button" data-random-question title="换一个问题">
+                <i data-lucide="shuffle"></i>
+              </button>
+            </div>
+          </header>
+
+          <section class="stage-card">
+            <section class="engine-panel chinese-dynamic" data-panel="chinese-dynamic" aria-label="中式动态命盘">
+              <div class="bagua-wrap">
+                <div class="bagua-plate" data-bagua-plate>
+                  <span style="--i:0">乾</span>
+                  <span style="--i:1">兑</span>
+                  <span style="--i:2">离</span>
+                  <span style="--i:3">震</span>
+                  <span style="--i:4">巽</span>
+                  <span style="--i:5">坎</span>
+                  <span style="--i:6">艮</span>
+                  <span style="--i:7">坤</span>
+                  <div class="compass-needle"></div>
+                  <div class="core-sigil">
+                    <span>日主</span>
+                    <strong data-day-master>丙火</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="live-stack">
+                <article class="live-card">
+                  <span>四柱</span>
+                  <strong data-pillars-inline>壬申 / 戊申 / 丙子 / 壬辰</strong>
+                  <p data-cn-basis>五行分布正在等待生成。</p>
+                </article>
+                <article class="live-card">
+                  <span>主导五行</span>
+                  <strong data-cn-element>火土并行</strong>
+                  <p data-cn-element-copy>先聚焦，再扩张。</p>
+                </article>
+                <article class="live-card">
+                  <span>卦象</span>
+                  <strong data-cn-hexagram>风火家人</strong>
+                  <p data-cn-hexagram-copy>内部秩序决定外部机会。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="engine-panel western-dynamic" data-panel="western-dynamic" aria-label="西式动态星盘">
+              <canvas class="star-canvas" width="900" height="620" data-star-canvas></canvas>
+              <div class="zodiac-wheel" aria-hidden="true">
+                <span style="--i:0">♈</span>
+                <span style="--i:1">♉</span>
+                <span style="--i:2">♊</span>
+                <span style="--i:3">♋</span>
+                <span style="--i:4">♌</span>
+                <span style="--i:5">♍</span>
+                <span style="--i:6">♎</span>
+                <span style="--i:7">♏</span>
+                <span style="--i:8">♐</span>
+                <span style="--i:9">♑</span>
+                <span style="--i:10">♒</span>
+                <span style="--i:11">♓</span>
+                <i class="planet planet-sun"></i>
+                <i class="planet planet-moon"></i>
+                <i class="planet planet-rise"></i>
+              </div>
+
+              <div class="astro-readout">
+                <article>
+                  <span>太阳星座</span>
+                  <strong data-sun-sign>狮子座</strong>
+                </article>
+                <article>
+                  <span>月亮估算</span>
+                  <strong data-moon-sign>白羊座</strong>
+                </article>
+                <article>
+                  <span>上升估算</span>
+                  <strong data-rising-sign>射手座</strong>
+                </article>
+              </div>
+            </section>
+
+            <section class="engine-panel chinese-static" data-panel="chinese-static" aria-label="中式静态报告">
+              <div class="report-sheet">
+                <header>
+                  <span>中式命理静态报告</span>
+                  <strong data-cn-report-name>来访者命盘摘要</strong>
+                </header>
+                <div class="pillar-grid">
+                  <article><span>年柱</span><strong data-pillar-year>壬申</strong></article>
+                  <article><span>月柱</span><strong data-pillar-month>戊申</strong></article>
+                  <article><span>日柱</span><strong data-pillar-day>丙子</strong></article>
+                  <article><span>时柱</span><strong data-pillar-hour>壬辰</strong></article>
+                </div>
+                <div class="element-bars" data-element-bars></div>
+                <p data-cn-static-copy>生成后显示五行结构、十神倾向和节律建议。</p>
+              </div>
+            </section>
+
+            <section class="engine-panel western-static" data-panel="western-static" aria-label="西式静态报告">
+              <div class="report-sheet astro-sheet">
+                <header>
+                  <span>西式占星静态报告</span>
+                  <strong data-west-report-name>来访者星盘摘要</strong>
+                </header>
+                <div class="pillar-grid">
+                  <article><span>太阳</span><strong data-static-sun>狮子座</strong></article>
+                  <article><span>月亮估算</span><strong data-static-moon>白羊座</strong></article>
+                  <article><span>上升估算</span><strong data-static-rising>射手座</strong></article>
+                  <article><span>主导元素</span><strong data-astro-element>火象</strong></article>
+                </div>
+                <div class="aspect-radar">
+                  <i style="--v:74%"></i>
+                  <i style="--v:48%"></i>
+                  <i style="--v:62%"></i>
+                  <i style="--v:86%"></i>
+                </div>
+                <p data-west-static-copy>生成后显示星座结构、元素倾向和行动窗口。</p>
+              </div>
+            </section>
+          </section>
+
+          <section class="insight-grid" aria-label="推演指标">
+            <article>
+              <span>能量指数</span>
+              <strong data-energy-score>72</strong>
+              <i data-energy-meter style="--score:72%"></i>
+            </article>
+            <article>
+              <span>关键窗口</span>
+              <strong data-window-label>7-21 天</strong>
+              <p data-window-copy>适合小范围验证。</p>
+            </article>
+            <article>
+              <span>避坑提醒</span>
+              <strong data-avoid-label>分散推进</strong>
+              <p data-avoid-copy>先抓主线，再开支线。</p>
+            </article>
+          </section>
+
+          <section class="reading-panel" aria-label="AI 解读结果">
+            <div class="reading-header">
+              <div>
+                <p class="eyebrow">AI Reading</p>
+                <h3 data-reading-title>中式命理 AI 解读</h3>
+                <p class="generated-stamp" data-generated-stamp>当前为预览结果</p>
+                <p class="question-echo" data-question-echo>问题：接下来三个月我最需要把握什么机会？</p>
+              </div>
+              <button type="button" class="ghost-action" data-copy-reading>
+                <i data-lucide="copy"></i>
+                <span>复制</span>
+              </button>
+            </div>
+
+            <div class="reading-grid" data-reading-grid>
+              <article class="is-featured">
+                <span>问题直答</span>
+                <p>填写资料后点击生成，系统会先直接回应你的问题。</p>
+              </article>
+              <article>
+                <span>判断依据</span>
+                <p>这里会展示命理或占星推演依据。</p>
+              </article>
+              <article>
+                <span>行动建议</span>
+                <p>这里会给出下一步行动。</p>
+              </article>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <aside class="answer-toast" data-answer-toast hidden aria-live="polite">
+      <button type="button" data-close-toast title="关闭">
+        <i data-lucide="x"></i>
+      </button>
+      <span>问题直答</span>
+      <p>生成后会在这里弹出即时答案。</p>
+    </aside>
+  </body>
+</html>
